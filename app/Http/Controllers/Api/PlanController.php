@@ -16,7 +16,6 @@ class PlanController extends Controller
     public function __construct(PlanService $service)
     {
         $this->service = $service;
-        $this->middleware('auth:sanctum');
     }
 
     public function index()

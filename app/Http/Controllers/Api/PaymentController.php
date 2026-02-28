@@ -14,7 +14,6 @@ class PaymentController extends Controller
     public function __construct(PaymentService $service)
     {
         $this->service = $service;
-        $this->middleware('auth:sanctum');
     }
 
     public function index(Request $request)

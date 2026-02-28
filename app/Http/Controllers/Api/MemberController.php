@@ -15,8 +15,8 @@ class MemberController extends Controller
     public function __construct(MemberService $service)
     {
         $this->service = $service;
-        $this->middleware('auth:sanctum');
     }
+    
     public function index(Request $request)
     {
         $filters = $request->only(['search', 'status', 'sort_by', 'direction']);
