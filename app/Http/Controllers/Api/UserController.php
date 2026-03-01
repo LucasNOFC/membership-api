@@ -10,7 +10,19 @@ use Illuminate\Http\Request;
 class UserController extends Controller
 {
 
-    public function index() {}
+    public function getUsers(UserService $service) {
+        $users = $service->getUser();
+
+        return response()->json($users);
+    }
+
+    public function deleteUser(Request $request, UserService $service) {
+        $data = $request->validate(['id' => ['required']]);
+
+        $user = $service->delete($data);
+
+        return response()->json($user);
+    }
 
     public function register(Request $request, UserService $service)
     {

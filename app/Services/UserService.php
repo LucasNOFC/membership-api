@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Nette\Utils\Json;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class UserService
 {
@@ -16,6 +18,13 @@ class UserService
             'role' => $data['role'],
             'password' => Hash::make($data['password']),
         ]);
+    }
+
+    public function delete(array $data): array
+    {
+        User::findOrFail($data['id'])->delete();
+
+        return ['message' => 'Usuário deletado com sucesso'];
     }
 
     public function login(array $credentials): array
@@ -37,5 +46,17 @@ class UserService
     public function logout(User $user): void
     {
         $user->currentAccessToken()->delete();
+    }
+
+    public function getUser(int $perPage = 10): array
+    {
+        $users = User::query()
+            ->select('name', 'email', 'role', 'id')
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage);
+
+        return [
+            'users' => $users
+        ];
     }
 }
