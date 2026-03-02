@@ -6,22 +6,48 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Services\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
 
-    public function getUsers(UserService $service) {
-        $users = $service->getUser();
+    public function getUsers(UserService $service)
+    {
+        $users = $service->getUsers();
 
         return response()->json($users);
     }
 
-    public function deleteUser(Request $request, UserService $service) {
-        $data = $request->validate(['id' => ['required']]);
-
-        $user = $service->delete($data);
+    public function getUser(int $id, UserService $service)
+    {
+        $user = $service->getUser($id);
 
         return response()->json($user);
+    }
+
+    public function deleteUser(int $id, UserService $service)
+    {
+
+        $user = $service->delete($id);
+
+        return response()->json($user);
+    }
+
+    public function editUser(int $id, Request $request, UserService $service)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($id)],
+            'password' => ['sometimes', 'min:8'],
+            'role' => ['sometimes', 'in:admin,collaborator'],
+        ]);
+
+        $user = $service->edit($id, $data);
+
+        return response()->json(
+            ['message' => 'Usuário editado'],
+            ['user' => $user],
+        );
     }
 
     public function register(Request $request, UserService $service)

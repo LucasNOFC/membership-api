@@ -18,6 +18,7 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users', [UserController::class, 'getUsers']);
+    Route::get('/user/{id}', [UserController::class, 'getUser']);
     Route::post('/auth/logout', [UserController::class, 'logout']);
     Route::get('/dashboard', [DashboardController::class, 'index']);
     Route::get('/me', function (Request $request) {
@@ -28,7 +29,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::post('/register', [UserController::class, 'register']);
-    Route::post('/users/delete', [UserController::class], 'delete');
+    Route::delete('/users/{id}', [UserController::class, 'deleteUser']);
+    Route::put('/users/{id}', [UserController::class, 'editUser']);
     Route::apiResource('plans', PlanController::class);
     Route::apiResource('payments', PaymentController::class);
 });

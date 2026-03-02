@@ -20,11 +20,27 @@ class UserService
         ]);
     }
 
-    public function delete(array $data): array
+    public function delete(int $id): array
     {
-        User::findOrFail($data['id'])->delete();
+        $user = User::findOrFail($id)->delete();
 
-        return ['message' => 'Usuário deletado com sucesso'];
+        return [
+            'message' => 'Usuário deletado com sucesso',
+            'user' => $user
+        ];
+    }
+
+    public function edit(int $id, array $data): array
+    {
+        $user = User::FindOrFail($id);
+
+        if (isset($data['password'])) {
+            $data['password'] = bcrypt($data['password']);
+        }
+
+        $user->update($data);
+
+        return $user->fresh();
     }
 
     public function login(array $credentials): array
@@ -48,7 +64,7 @@ class UserService
         $user->currentAccessToken()->delete();
     }
 
-    public function getUser(int $perPage = 10): array
+    public function getUsers(int $perPage = 10): array
     {
         $users = User::query()
             ->select('name', 'email', 'role', 'id')
@@ -57,6 +73,17 @@ class UserService
 
         return [
             'users' => $users
+        ];
+    }
+
+    public function getUser(int $id): array 
+    {
+        $user = User::query()
+        ->select('name', 'email', 'password', 'role')
+        ->findOrFail($id);
+
+        return [
+            'user' => $user
         ];
     }
 }
