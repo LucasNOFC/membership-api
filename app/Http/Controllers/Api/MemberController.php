@@ -23,7 +23,6 @@ class MemberController extends Controller
 
         return MemberResource::collection($this->service->list($filters));
     }
-
     /**
      * Store a newly created resource in storage.
      */

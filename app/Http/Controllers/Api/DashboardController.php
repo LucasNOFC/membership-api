@@ -20,6 +20,11 @@ class DashboardController extends Controller
             'overdue_members' => Member::where('status', 'overdue')->count(),
             'monthly_revenue' => Payment::where('reference_month', $currentMonth)->sum('amount'),
             'members_due_today' => Member::where('due_day', $today->day)->count(),
+            'daily_revenue' => Payment::whereMonth('paid_at', $today->month)
+                ->selectRaw('DAY(paid_at) as day, SUM(amount) as revenue')
+                ->groupBy('day')
+                ->orderBy('day')
+                ->get(),
         ]);
     }
 }

@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         Plan::factory()
-            ->count(3)
+            ->count(47)
             ->hasMembers(
                 Member::factory()
                     ->count(10)
