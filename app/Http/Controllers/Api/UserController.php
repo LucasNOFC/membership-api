@@ -33,7 +33,7 @@ class UserController extends Controller
         return response()->json($user);
     }
 
-    public function editUser(int $id, Request $request, UserService $service)
+    public function editUser(Request $request, int $id,  UserService $service)
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -44,10 +44,10 @@ class UserController extends Controller
 
         $user = $service->edit($id, $data);
 
-        return response()->json(
-            ['message' => 'Usuário editado'],
-            ['user' => $user],
-        );
+        return response()->json([
+            'message' => 'Usuário editado',
+            'user' => $user,
+        ]);
     }
 
     public function register(Request $request, UserService $service)

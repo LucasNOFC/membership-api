@@ -30,12 +30,14 @@ class UserService
         ];
     }
 
-    public function edit(int $id, array $data): array
+    public function edit(int $id, array $data): User
     {
         $user = User::FindOrFail($id);
 
-        if (isset($data['password'])) {
+        if (!empty($data['password'])) {
             $data['password'] = bcrypt($data['password']);
+        } else {
+            unset($data['password']);
         }
 
         $user->update($data);
