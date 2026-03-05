@@ -17,15 +17,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $this->call([
+            PlanSeeder::class,
+            AdminUserSeeder::class,
+        ]);
 
-        Plan::factory()
-            ->count(47)
-            ->hasMembers(
-                Member::factory()
-                    ->count(10)
-                    ->hasPayments(2)
-            )
-            ->create();
+        Plan::all()->each(function ($plan) {
+            Member::factory()
+                ->count(30)
+                ->for($plan)
+                ->hasPayments(1)
+                ->create();
+        });
     }
 }

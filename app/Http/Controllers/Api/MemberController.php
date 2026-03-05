@@ -7,6 +7,7 @@ use App\Http\Resources\MemberResource;
 use App\Models\Member;
 use App\Services\MemberService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class MemberController extends Controller
 {
@@ -16,7 +17,7 @@ class MemberController extends Controller
     {
         $this->service = $service;
     }
-    
+
     public function index(Request $request)
     {
         $filters = $request->only(['search', 'status', 'sort_by', 'direction']);
@@ -52,17 +53,23 @@ class MemberController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Member $member)
+    public function update(Request $request, int $id)
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'nullable|email|unique:members,email',
+            'email' => ['nullable', 'email', Rule::unique('members', 'email')->ignore($id)],
             'phone' => 'required|string|max:20',
             'plan_id' => 'required|exists:plans,id',
             'due_day' => 'required|integer|min:1|max:31',
         ]);
 
-        return new MemberResource($this->service->update($member, $data));
+        $member = $this->service->update($data, $id);
+
+        return response()->json([
+            'message' => 'Membro criado',
+            'member' => $member
+        ]);
+
     }
 
     /**
@@ -70,10 +77,8 @@ class MemberController extends Controller
      */
     public function destroy(Member $member)
     {
-        $this->authorize('delete', $member);
+        $result = $this->service->delete($member->id);
 
-        $this->service->delete($member);
-
-        return response()->noContent();
+        return response()->json($result);
     }
 }

@@ -17,11 +17,16 @@ class PaymentFactory extends Factory
      */
     public function definition(): array
     {
+        $paidAt = fake()->dateTimeBetween(
+            now()->startOfMonth(),
+            now()->endOfMonth()
+        );
+
         return [
             'member_id' => Member::factory(),
             'amount' => fake()->randomFloat(2, 50, 200),
-            'reference_month' => now()->startOfMonth(),
-            'paid_at' => now(),
+            'reference_month' => now()->format('Y-m'),
+            'paid_at' => $paidAt,
         ];
     }
 }

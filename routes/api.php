@@ -17,7 +17,7 @@ Route::prefix('auth')->group(function () {
 
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/customers', [MemberController::class, 'getAll']);
+    Route::get('/customers', [MemberController::class, 'index']);
     Route::get('/users', [UserController::class, 'getUsers']);
     Route::get('/user/{id}', [UserController::class, 'getUser']);
     Route::post('/auth/logout', [UserController::class, 'logout']);

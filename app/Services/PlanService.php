@@ -37,7 +37,7 @@ class PlanService
      */
     public function show(Plan $plan)
     {
-        return PlanResource::collection(
+        return new PlanResource(
             $plan->load('members')
         );
     }

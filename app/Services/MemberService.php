@@ -34,15 +34,24 @@ class MemberService
         return Member::create($data);
     }
 
-    public function update(Member $member, array $data): Member
+    public function update(array $data, int $id): Member
     {
+        $member = Member::FindOrFail($id);
         $member->update($data);
-        return $member;
+        return $member->fresh();
     }
 
-    public function delete(Member $member): void
+    public function delete(int $id): array
     {
+
+        $member = Member::findOrFail($id);
+        
         $member->delete();
+
+        return [
+            'message' => 'Membro deletado com sucesso',
+            'member' => $member
+        ];
     }
 
     public function find(int $id): Member
@@ -62,8 +71,8 @@ class MemberService
                     ->exists();
 
                 $dueDate = now()->year($today->year)
-                                ->month($today->month)
-                                ->day($member->due_day);
+                    ->month($today->month)
+                    ->day($member->due_day);
 
                 $member->update([
                     'status' => $hasPayment || $today->lte($dueDate) ? 'active' : 'overdue'
