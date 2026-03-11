@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\MemberController;
+use App\Http\Controllers\Api\MemberPaymentController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PlanController;
 use App\Http\Controllers\Api\UserController;
@@ -26,6 +27,12 @@ Route::middleware('auth:sanctum')->group(function () {
         return new UserResource($request->user());
     });
     Route::apiResource('members', MemberController::class);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::scopeBindings()->group(function () {
+        Route::apiResource('members.payments', MemberPaymentController::class)->shallow();
+    });
 });
 
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
