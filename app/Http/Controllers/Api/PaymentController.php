@@ -16,15 +16,23 @@ class PaymentController extends Controller
         $this->service = $service;
     }
 
-    public function index(Request $request)
+    public function index(Request $request, $member = null)
     {
         $filters = $request->only(['member_id', 'reference_month', 'sort_by', 'direction']);
+        
+        if ($member) {
+            $filters['member_id'] = $member;
+        }
+
         return $this->service->index($filters);
     }
 
-    public function store(Request $request)
+    public function store(Request $request, $member)
     {
+        $request->merge(['member_id' => $member]);
+        
         $this->authorize('create', Payment::class);
+        
         return $this->service->store($request);
     }
 

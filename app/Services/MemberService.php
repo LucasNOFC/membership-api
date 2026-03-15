@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Member;
+use App\Models\Payment;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 
 class MemberService
@@ -31,7 +33,21 @@ class MemberService
 
     public function create(array $data): Member
     {
-        return Member::create($data);
+        return DB::transaction(function () use ($data) {
+            $member = Member::create($data);
+
+            $member->load('plan');
+
+            Payment::create([
+                'member_id'       => $member->id,
+                'amount'          => $member->plan->price,
+                'reference_month' => now()->format('Y-m'),
+                'paid_at'         => now(), // Data de hoje
+                'status'          => 'paid', // Opcional: dependendo da sua estrutura
+            ]);
+
+            return $member;
+        });
     }
 
     public function update(array $data, int $id): Member
@@ -45,7 +61,7 @@ class MemberService
     {
 
         $member = Member::findOrFail($id);
-        
+
         $member->delete();
 
         return [

@@ -75,9 +75,9 @@ class MemberController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Member $member)
+    public function destroy(Request $request, int $id)
     {
-        $result = $this->service->delete($member->id);
+        $result = $this->service->delete($id);
 
         return response()->json($result);
     }

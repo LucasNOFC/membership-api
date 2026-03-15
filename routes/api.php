@@ -31,7 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::scopeBindings()->group(function () {
-        Route::apiResource('members.payments', MemberPaymentController::class)->shallow();
+        Route::apiResource('members.payments', PaymentController::class)->shallow();
     });
 });
 
@@ -40,5 +40,4 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::delete('/users/{id}', [UserController::class, 'deleteUser']);
     Route::put('/users/{id}', [UserController::class, 'editUser']);
     Route::apiResource('plans', PlanController::class);
-    Route::apiResource('payments', PaymentController::class);
 });

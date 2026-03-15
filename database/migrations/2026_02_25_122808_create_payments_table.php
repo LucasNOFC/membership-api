@@ -13,18 +13,13 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
+            $table->index(['member_id', 'reference_month']);
             $table->foreignId('member_id')->constrained()->cascadeOnDelete();
-
             $table->decimal('amount', 10, 2);
-
             $table->string('reference_month', 7);
-
             $table->date('paid_at');
-
             $table->string('receipt_path')->nullable();
-
             $table->unique(['member_id', 'reference_month']);
-
             $table->timestamps();
         });
     }

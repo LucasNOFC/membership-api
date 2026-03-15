@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Http\Resources\PaymentResource;
+use App\Models\Member;
 use App\Models\Payment;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PaymentService
@@ -35,13 +37,43 @@ class PaymentService
     {
         $data = $request->validate([
             'member_id' => 'required|exists:members,id',
-            'amount' => 'required|numeric|min:0',
-            'reference_month' => 'required|date_format:Y-m',
             'paid_at' => 'nullable|date',
             'receipt_path' => 'nullable|string',
         ]);
 
-        return Payment::create($data);
+        $member = Member::with(['plan', 'payments'])->findOrFail($data['member_id']);
+
+        $lastPayment = $member->payments()
+            ->orderByDesc('reference_month')
+            ->first();
+
+        if ($lastPayment) {
+            $nextMonth = $lastPayment && $lastPayment->reference_month
+                ? Carbon::createFromFormat('Y-m', $lastPayment->reference_month)->addMonth()->format('Y-m')
+                : now()->format('Y-m');
+        } else {
+
+            $nextMonth = now()->format('Y-m');
+        }
+
+        if (!$member->plan) {
+            abort(422, 'O membro não possui um plano ativo.');
+        }
+
+
+        $payment = Payment::create([
+            'member_id' => $member->id,
+            'amount' => $member->plan->price,
+            'reference_month' => $nextMonth,
+            'paid_at' => $data['paid_at'] ?? now(),
+            'receipt_path' => $data['receipt_path'] ?? null
+        ]);
+
+        $member->update([
+            'status' => 'active'
+        ]);
+
+        return $payment->load('member');
     }
 
     public function show(Payment $payment): Payment

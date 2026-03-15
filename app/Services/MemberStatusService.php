@@ -16,7 +16,7 @@ class MemberStatusService
 
                 $referenceMonth = $today->format('Y-m');
 
-                $hasPayment = $member->payments()
+                $hasPayment = $member->payments
                     ->where('reference_month', $referenceMonth)
                     ->exists();
 
@@ -26,10 +26,12 @@ class MemberStatusService
                     $member->due_day
                 );
 
-                if (!$hasPayment && $today->gt($dueDate)) {
-                    $member->update(['status' => 'overdue']);
-                } else {
-                    $member->update(['status' => 'active']);
+                $status = (!$hasPayment && $today->gt($dueDate))
+                    ? 'overdue'
+                    : 'active';
+
+                if ($member->status !== $status) {
+                    $member->update(['status' => $status]);
                 }
             }
         });
