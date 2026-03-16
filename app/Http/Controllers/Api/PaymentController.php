@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Payment;
 use App\Services\PaymentService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
 {
     protected $service;
+
+    use AuthorizesRequests;
 
     public function __construct(PaymentService $service)
     {

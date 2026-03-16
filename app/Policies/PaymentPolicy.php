@@ -29,7 +29,7 @@ class PaymentPolicy
      */
     public function create(User $user): bool
     {
-        return $user->role === 'admin'();
+        return $user->role === 'admin';
     }
 
     /**
@@ -37,7 +37,7 @@ class PaymentPolicy
      */
     public function update(User $user, Payment $payment): bool
     {
-        return $user->role === 'admin'();
+        return $user->role === 'admin';
     }
 
     /**
@@ -45,7 +45,7 @@ class PaymentPolicy
      */
     public function delete(User $user, Payment $payment): bool
     {
-        return $user->role === 'admin'();
+        return $user->role === 'admin';
     }
 
     /**

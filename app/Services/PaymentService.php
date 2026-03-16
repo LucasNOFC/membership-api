@@ -7,6 +7,7 @@ use App\Models\Member;
 use App\Models\Payment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class PaymentService
 {
@@ -43,29 +44,38 @@ class PaymentService
 
         $member = Member::with(['plan', 'payments'])->findOrFail($data['member_id']);
 
+        if (!$member->plan) {
+            abort(422, 'O membro não possui um plano ativo.');
+        }
+
         $lastPayment = $member->payments()
             ->orderByDesc('reference_month')
             ->first();
 
-        if ($lastPayment) {
-            $nextMonth = $lastPayment && $lastPayment->reference_month
-                ? Carbon::createFromFormat('Y-m', $lastPayment->reference_month)->addMonth()->format('Y-m')
-                : now()->format('Y-m');
-        } else {
+        $nextMonth = $lastPayment
+            ? Carbon::createFromFormat('Y-m', $lastPayment->reference_month)->addMonth()->format('Y-m')
+            : now()->format('Y-m');
 
-            $nextMonth = now()->format('Y-m');
+        $referenceMonth = isset($data['paid_at'])
+            ? Carbon::parse($data['paid_at'])->format('Y-m')
+            : now()->format('Y-m');
+
+        if ($member->payments()->where('reference_month', $referenceMonth)->exists()) {
+            throw ValidationException::withMessages([
+                'payment' => ['Pagamento para este mês já foi registrado.']
+            ]);
         }
 
-        if (!$member->plan) {
-            abort(422, 'O membro não possui um plano ativo.');
-        }
+        $paidAt = isset($data['paid_at'])
+            ? Carbon::parse($data['paid_at'])->format('Y-m-d')
+            : now()->format('Y-m-d');
 
 
         $payment = Payment::create([
             'member_id' => $member->id,
             'amount' => $member->plan->price,
             'reference_month' => $nextMonth,
-            'paid_at' => $data['paid_at'] ?? now(),
+            'paid_at' => $paidAt,
             'receipt_path' => $data['receipt_path'] ?? null
         ]);
 
