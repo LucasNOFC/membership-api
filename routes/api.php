@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\MemberController;
-use App\Http\Controllers\Api\MemberPaymentController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\PlanController;
 use App\Http\Controllers\Api\UserController;

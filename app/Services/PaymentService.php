@@ -12,7 +12,7 @@ use Illuminate\Validation\ValidationException;
 class PaymentService
 {
 
-    public function index(array $filters = [])
+    public function list(array $filters = [], int $perPage = 5)
     {
         $query = Payment::with('member');
 
@@ -31,7 +31,7 @@ class PaymentService
             $query->latest();
         }
 
-        return PaymentResource::collection($query->paginate(10));
+        return $query->paginate($perPage);
     }
 
     public function store(Request $request): Payment
@@ -56,11 +56,17 @@ class PaymentService
             ? Carbon::createFromFormat('Y-m', $lastPayment->reference_month)->addMonth()->format('Y-m')
             : now()->format('Y-m');
 
-        $referenceMonth = isset($data['paid_at'])
+        $requestedMonth = isset($data['paid_at'])
             ? Carbon::parse($data['paid_at'])->format('Y-m')
-            : now()->format('Y-m');
+            : $nextMonth;
 
-        if ($member->payments()->where('reference_month', $referenceMonth)->exists()) {
+        if ($requestedMonth !== $nextMonth) {
+            throw ValidationException::withMessages([
+                'payment' => ["Pagamento inválido. O próximo mês permitido é: {$nextMonth}."]
+            ]);
+        }
+
+        if ($member->payments()->where('reference_month', $nextMonth)->exists()) {
             throw ValidationException::withMessages([
                 'payment' => ['Pagamento para este mês já foi registrado.']
             ]);
@@ -69,7 +75,6 @@ class PaymentService
         $paidAt = isset($data['paid_at'])
             ? Carbon::parse($data['paid_at'])->format('Y-m-d')
             : now()->format('Y-m-d');
-
 
         $payment = Payment::create([
             'member_id' => $member->id,
@@ -110,5 +115,16 @@ class PaymentService
     public function delete(Payment $payment): void
     {
         $payment->delete();
+    }
+
+
+    public function getPaidPaymentsByMember(int $memberId, int $perPage = 5)
+    {
+        $query = Payment::where('member_id', $memberId)
+            ->whereNotNull('paid_at')
+            ->orderByDesc('paid_at')
+            ->with('member');
+
+        return PaymentResource::collection($query->paginate($perPage));
     }
 }

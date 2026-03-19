@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Http\Resources\PlanResource;
 use App\Models\Plan;
 use Illuminate\Support\Collection;
-use Symfony\Component\HttpFoundation\Request;
+use Illuminate\Http\Request;
 
 class PlanService
 {
@@ -19,37 +19,27 @@ class PlanService
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(array $data): Plan
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
-            'duration_days' => 'required|integer|min:1',
-            'is_active' => 'boolean',
-            'description' => 'nullable|string',
-        ]);
-
-        return Plan::create($data);
+       return Plan::create($data);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Plan $plan)
+    public function find(int $id): Plan
     {
-        return new PlanResource(
-            $plan->load('members')
-        );
+        return Plan::findOrFail($id);
     }
-
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(array $data, int $id): Plan
     {
-        //
+        $plan = Plan::findOrFail($id);
+        $plan->update($data);
+        return $plan->fresh();
     }
-
     /**
      * Remove the specified resource from storage.
      */

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PaymentResource;
 use App\Models\Payment;
 use App\Services\PaymentService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -22,20 +23,20 @@ class PaymentController extends Controller
     public function index(Request $request, $member = null)
     {
         $filters = $request->only(['member_id', 'reference_month', 'sort_by', 'direction']);
-        
+
         if ($member) {
             $filters['member_id'] = $member;
         }
 
-        return $this->service->index($filters);
+        return $this->service->list($filters);
     }
 
     public function store(Request $request, $member)
     {
         $request->merge(['member_id' => $member]);
-        
+
         $this->authorize('create', Payment::class);
-        
+
         return $this->service->store($request);
     }
 
@@ -56,5 +57,12 @@ class PaymentController extends Controller
         $this->authorize('delete', $payment);
         $this->service->delete($payment);
         return response()->noContent();
+    }
+
+    public function paidByMember(Request $request)
+    {
+        $filters = $request->only(['search', 'status', 'sort_by', 'direction']);
+
+        return PaymentResource::collection($this->service->list($filters));
     }
 }

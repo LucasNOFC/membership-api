@@ -42,8 +42,8 @@ class MemberService
                 'member_id'       => $member->id,
                 'amount'          => $member->plan->price,
                 'reference_month' => now()->format('Y-m'),
-                'paid_at'         => now(), // Data de hoje
-                'status'          => 'paid', // Opcional: dependendo da sua estrutura
+                'paid_at'         => now(),
+                'status'          => 'paid',
             ]);
 
             return $member;

@@ -28,8 +28,15 @@ class PlanController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('create', Plan::class);
-        return $this->service->store($request);
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'duration_days' => 'required|integer|min:1',
+            'is_active' => 'boolean',
+            'description' => 'nullable|string',
+        ]);
+
+        return new PlanResource($this->service->store($data));
     }
 
     /**
@@ -37,17 +44,31 @@ class PlanController extends Controller
      */
     public function show(Plan $plan)
     {
-        $this->authorize('view', $plan);
-
-        return $this->service->show($plan);
+        return new PlanResource(
+            $this->service->find($plan->id)
+        );
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, int $id)
     {
-        //
+
+        $data = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'price' => 'sometimes|required|numeric|min:0',
+            'duration_days' => 'sometimes|required|integer|min:1',
+            'is_active' => 'sometimes|boolean',
+            'description' => 'nullable|string',
+        ]);
+
+        $plan = $this->service->update($data, $id);
+
+        return response()->json([
+            'message' => 'Plano atualizado com sucesso',
+            'data' => $plan
+        ]);
     }
 
     /**
