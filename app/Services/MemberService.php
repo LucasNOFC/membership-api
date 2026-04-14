@@ -34,6 +34,13 @@ class MemberService
     public function create(array $data): Member
     {
         return DB::transaction(function () use ($data) {
+            $plan = \App\Models\Plan::findOrFail($data['plan_id']);
+            if (!$plan->is_active) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'plan_id' => 'O plano selecionado não está ativo.'
+                ]);
+            }
+
             $member = Member::create($data);
 
             $member->load('plan');
@@ -52,15 +59,32 @@ class MemberService
 
     public function update(array $data, int $id): Member
     {
-        $member = Member::FindOrFail($id);
+        $member = Member::findOrFail($id);
+        
+        if (isset($data['plan_id'])) {
+            $plan = \App\Models\Plan::findOrFail($data['plan_id']);
+            if (!$plan->is_active) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'plan_id' => 'O plano selecionado não está ativo.'
+                ]);
+            }
+        }
+        
         $member->update($data);
         return $member->fresh();
     }
 
     public function delete(int $id): array
     {
-
         $member = Member::findOrFail($id);
+
+        // Check for unpaid payments
+        $unpaidPayments = $member->payments()->whereNull('paid_at')->count();
+        if ($unpaidPayments > 0) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'member' => 'Não é possível deletar membro com pagamentos pendentes.'
+            ]);
+        }
 
         $member->delete();
 

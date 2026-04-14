@@ -66,7 +66,7 @@ class MemberController extends Controller
         $member = $this->service->update($data, $id);
 
         return response()->json([
-            'message' => 'Membro criado',
+            'message' => 'Membro atualizado',
             'member' => $member
         ]);
 

@@ -74,8 +74,9 @@ class PlanController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(int $id)
     {
-        //
+        $result = $this->service->destroy($id);
+        return response()->json($result);
     }
 }

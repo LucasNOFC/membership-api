@@ -114,7 +114,28 @@ class PaymentService
 
     public function delete(Payment $payment): void
     {
+        $member = $payment->member;
         $payment->delete();
+        
+        // Update member status after deletion
+        $this->updateMemberStatus($member);
+    }
+
+    private function updateMemberStatus(Member $member): void
+    {
+        $today = now();
+        $referenceMonth = $today->format('Y-m');
+        $hasPayment = $member->payments()
+            ->where('reference_month', $referenceMonth)
+            ->exists();
+
+        $dueDate = now()->year($today->year)
+            ->month($today->month)
+            ->day($member->due_day);
+
+        $member->update([
+            'status' => $hasPayment || $today->lte($dueDate) ? 'active' : 'overdue'
+        ]);
     }
 
 

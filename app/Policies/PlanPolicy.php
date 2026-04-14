@@ -29,7 +29,7 @@ class PlanPolicy
      */
     public function create(User $user): bool
     {
-        return $user->role === 'admin'();
+        return $user->role === 'admin';
     }
 
     /**
@@ -37,7 +37,7 @@ class PlanPolicy
      */
     public function update(User $user, Plan $plan): bool
     {
-        return $user->role === 'admin'();
+        return $user->role === 'admin';
     }
 
     /**
@@ -45,7 +45,7 @@ class PlanPolicy
      */
     public function delete(User $user, Plan $plan): bool
     {
-        return $user->role === 'admin'();
+        return $user->role === 'admin';
     }
 
     /**

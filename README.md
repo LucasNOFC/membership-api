@@ -16,6 +16,33 @@ Uma API RESTful construída com Laravel para gerenciamento de membros, planos e 
 - **Dashboard**: Estatísticas e visão geral
 - **Documentação de API**: Gerada automaticamente com Scribe
 
+## Regras de Negócio
+
+### Usuários
+- Apenas usuários com role `admin` podem registrar, editar e deletar outros usuários.
+- Roles válidas: `admin` (acesso total) e `collaborator` (acesso limitado).
+- Validações: email único, senha com mínimo 8 caracteres.
+
+### Membros
+- **Criação**: O plano selecionado deve estar ativo. Um pagamento inicial é gerado automaticamente para o mês atual.
+- **Atualização**: Se o plano for alterado, o novo plano deve estar ativo.
+- **Exclusão**: Não é possível deletar membros com pagamentos pendentes.
+- **Status**: 
+  - `active`: Se há pagamento para o mês atual ou se a data atual é anterior ao dia de vencimento.
+  - `overdue`: Se não há pagamento para o mês atual e a data atual é posterior ao dia de vencimento.
+
+### Pagamentos
+- Apenas usuários `admin` podem criar, editar ou deletar pagamentos.
+- Pagamentos devem ser feitos sequencialmente para o próximo mês disponível (não é possível pular meses).
+- Não é permitido duplicar pagamentos para o mesmo mês de referência.
+- Ao registrar um pagamento, o status do membro é atualizado para `active`.
+- Ao deletar um pagamento, o status do membro é recalculado.
+
+### Planos
+- Apenas usuários `admin` podem criar, editar ou deletar planos.
+- **Desativação**: Não é possível desativar um plano que possui membros ativos.
+- **Exclusão**: Não é possível deletar um plano que possui membros associados.
+
 ## Requisitos
 
 - PHP 8.2 ou superior

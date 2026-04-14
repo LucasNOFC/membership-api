@@ -37,14 +37,36 @@ class PlanService
     public function update(array $data, int $id): Plan
     {
         $plan = Plan::findOrFail($id);
+        
+        if (isset($data['is_active']) && !$data['is_active']) {
+            // Check if plan has active members
+            if ($plan->members()->where('status', 'active')->exists()) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'is_active' => 'Não é possível desativar plano com membros ativos.'
+                ]);
+            }
+        }
+        
         $plan->update($data);
         return $plan->fresh();
     }
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(int $id): array
     {
-        //
+        $plan = Plan::findOrFail($id);
+        
+        if ($plan->members()->exists()) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'plan' => 'Não é possível deletar plano com membros associados.'
+            ]);
+        }
+        
+        $plan->delete();
+        
+        return [
+            'message' => 'Plano deletado com sucesso'
+        ];
     }
 }
