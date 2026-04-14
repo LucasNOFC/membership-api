@@ -1,60 +1,116 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Oracle Membership API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+[![Tests](https://github.com/your-username/oracle-membership-api/actions/workflows/tests.yml/badge.svg)](https://github.com/your-username/oracle-membership-api/actions)
+[![PHP Version](https://img.shields.io/badge/PHP-8.2%2B-blue)](https://php.net)
+[![Laravel Version](https://img.shields.io/badge/Laravel-12.x-red)](https://laravel.com)
 
-## About Laravel
+Uma API RESTful construída com Laravel para gerenciamento de membros, planos e pagamentos. Inclui autenticação via Laravel Sanctum e documentação automática de API com Scribe.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Funcionalidades
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Autenticação**: Login/logout com tokens via Sanctum
+- **Usuários**: Gerenciamento de usuários (admin e comuns)
+- **Membros**: CRUD completo para membros
+- **Planos**: Gerenciamento de planos de assinatura (apenas admin)
+- **Pagamentos**: CRUD para pagamentos associados a membros
+- **Dashboard**: Estatísticas e visão geral
+- **Documentação de API**: Gerada automaticamente com Scribe
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Requisitos
 
-## Learning Laravel
+- PHP 8.2 ou superior
+- Composer
+- Node.js e NPM (para assets frontend, se aplicável)
+- Banco de dados (MySQL, PostgreSQL, SQLite, etc.)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Instalação
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/your-username/oracle-membership-api.git
+   cd oracle-membership-api
+   ```
 
-## Laravel Sponsors
+2. Instale as dependências do PHP:
+   ```bash
+   composer install
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+3. Instale as dependências do Node.js (se houver assets):
+   ```bash
+   npm install
+   ```
 
-### Premium Partners
+4. Copie o arquivo de configuração do ambiente:
+   ```bash
+   cp .env.example .env
+   ```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+5. Configure o arquivo `.env` com suas credenciais de banco de dados e outras configurações necessárias.
 
-## Contributing
+6. Gere a chave da aplicação:
+   ```bash
+   php artisan key:generate
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+7. Execute as migrações do banco de dados:
+   ```bash
+   php artisan migrate
+   ```
 
-## Code of Conduct
+8. (Opcional) Execute os seeders para dados de exemplo:
+   ```bash
+   php artisan db:seed
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Executando a Aplicação
 
-## Security Vulnerabilities
+Para iniciar o servidor de desenvolvimento:
+```bash
+php artisan serve
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+A API estará disponível em `http://localhost:8000`.
 
-## License
+## Executando os Testes
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Para executar os testes unitários e de funcionalidade:
+```bash
+php artisan test
+```
+
+## Documentação da API
+
+A documentação completa da API é gerada automaticamente usando o pacote Scribe.
+
+Para gerar a documentação:
+```bash
+php artisan scribe:generate
+```
+
+Após iniciar o servidor (`php artisan serve`), a documentação estará disponível em `http://localhost:8000/docs`.
+
+Também são gerados arquivos Postman collection e OpenAPI specification em `storage/app/private/scribe/`.
+
+## Estrutura do Projeto
+
+- `app/Models/`: Modelos Eloquent (User, Member, Payment, Plan)
+- `app/Http/Controllers/Api/`: Controladores da API
+- `app/Services/`: Lógica de negócio
+- `app/Policies/`: Políticas de autorização
+- `database/migrations/`: Migrações do banco de dados
+- `routes/api.php`: Definições das rotas da API
+- `tests/`: Testes automatizados
+
+## Contribuição
+
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
+3. Commit suas mudanças (`git commit -am 'Adiciona nova feature'`)
+4. Push para a branch (`git push origin feature/nova-feature`)
+5. Abra um Pull Request
+
+## Licença
+
+Este projeto está licenciado sob a [MIT License](LICENSE).
 # membership-api
